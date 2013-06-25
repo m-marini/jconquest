@@ -1,0 +1,99 @@
+\documentclass{article}
+\begin{document}
+  \part{Battaglia JConquest}
+  \section{Concetti}
+  
+  Lo scontro avviene tra due parti $A$ attaccante e $B$ difensore ogniuna
+  delle quali ha a disposizione rispettivamente $n$ e $m$ unit\`a.
+  
+  Il processo di scontro si svolge ripetendo singoli scontri dove ad ogni
+  scontro si determina casualmente la perdita di una unità da una o dall'altra
+  parte. Il ciclo si ripete fina a che una parte perde tutte le unità.
+  
+  Sia $p$ la probabilit\`a che in un singolo scontro $A$ vinca e $B$ perda una
+  unità.
+  
+  Definiamo anche
+  
+  \begin{equation}
+    P_{(i|k)}=\frac{k!}{i!(k-i)!}p^i(1-p)^{k-i}
+  \end{equation}
+  
+  la probabilit\`a di Poisson che $i$ eventi su $k$ siano verificati.
+  
+  \section{Probabilit\`a di vincita di $A$}
+  
+  Per calcolare la probabilit\`a di vincita di $A$ osserviamo che \`e
+  necessario che $m$ scontri siano vincenti e $k<n$ siano negativi.
+  
+  La probabilit\`a di vincita esattamente dopo $m+k$ tentativi \`e la
+  probabilit\`a di vincita all'$(m+k)$-esimo tentativo, pari a $p$, per la
+  probabilit\`a che nei precedenti $m+k-1$ tentativi siano risultati vincenti
+  esattamente $m-1$ tentativi:
+  
+  \begin{equation}
+    P_{(win|m+k)}=p P_{(m-1|m+k-1)}
+  \end{equation}
+  
+  sostituendo
+  
+  \begin{displaymath}
+    \eqn
+    P_{(win|m+k)}=p \frac{(m+k-1)!}{(m-1)!k!}p^{m-1}(1-p)^k
+  \end{displaymath}
+  
+  diventa
+  
+  \begin{equation}
+    P_{(win|m+k)}= \frac{(m+k-1)!}{(m-1)!k!}p^m(1-p)^k
+    \label{eqno:pwinmk}
+  \end{equation}
+  
+  Condizioni necessarie per la (\ref{eqno:pwinmk}) sono che:
+  
+  \begin{eqnarray}
+    m+k-1\ge 0
+    \label{eqno:cond1}
+    \\
+    k<n
+    \\
+    k\ge 0
+  \end{eqnarray}
+  
+  La (\ref{eqno:cond1}) diventa $k \ge 1-m$ essendo $m\ge 1$ \`e verificata.
+  
+  Quindi rimane solo
+  
+  \begin{equation}
+    0 \le k \le n-1
+  \end{equation}
+
+  La probabilit\`a totale \`e data dalla somma delle singole probabilit\`a:
+  
+  \begin{equation}
+    P_{(win)}=\sum_{k=0}^{n-1} P_{(win|m+k)}
+  \end{equation}
+  
+  Sostituendo
+  
+  \begin{displaymath}
+    P_{(win)}=\sum_{k=0}^{n-1} \frac{(m+k-1)!}{(m-1)!k!}p^m(1-p)^k
+  \end{displaymath}
+  
+  diventa
+  
+  \begin{equation}
+    P_{(win)}=\frac{p^m}{(m-1)!}\sum_{k=0}^{n-1} \frac{(m+k-1)!}{k!}(1-p)^k
+  \end{equation}
+  
+  \section{Probabilit\`a di perdita di $A$}
+  
+  Similmente possiamo calcolare la possibilit\`a di perdita di $A$.
+  
+  \begin{eqnarray}
+    P_{(loose|n+k)}= \frac{(n+k-1)!}{(n-1)!k!}(1-p)^n p^k
+    \\
+    P_{(loose)}=\frac{(1-p)^n}{(n-1)!}\sum_{k=0}^{m-1} \frac{(n+k-1)!}{k!}p^k
+  \end{eqnarray}
+  
+\end{document}

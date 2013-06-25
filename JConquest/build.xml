@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     24-set-2005 19.21.40                                                        
+
+          $Id: build.xml,v 1.3 2006/03/16 22:35:24 marco Exp $         
+     ====================================================================== -->
+<project name="JConquest" default="makelib" basedir=".">
+
+	<description>
+	</description>
+
+	<!-- set global properties for this build -->
+	<property file="build.properties" />
+
+	<target name="makelib">
+		<delete file="${jar}.jar" failonerror="false" />
+		<jar jarfile="${jar}.jar" basedir="${bin.includes}" />
+	</target>
+
+</project>

@@ -1,0 +1,9 @@
+l'utente seleziona il pianeta di lancio premendo il pulsante del mouse sopra il pianeta.
+
+il sistema traccia la posizione del mouse segnalando i dati del pianeta di partenza, la distanza dal pianeta di partenza, la data di arrivo e se il mouse è sopra un pianeta diverso da quello di partenza i dati del pianeta di arrivo
+
+l'utente rilascia il pulsante sul pianeta di destinazione
+
+l'utente inserisce il numero di navi della flotta.
+
+il sistema crea la flotta e la lancia verso il pianeta di destinazione
