@@ -17,26 +17,40 @@ package org.mmarini.jquest;
  * @author US00852
  * @version $Id: Planet.java,v 1.2 2006/03/16 22:35:24 marco Exp $
  */
-public class Planet extends AbstractUniverseObject implements ITickTimer {
-	private String name;
-	private IOwner owner;
-	private double shipRate;
+public class Planet extends AbstractUniverseObject implements TickTimer {
+	private final String name;
+	private final double shipRate;
+	private final double killRate;
+	private Owner owner;
 	private Point location;
 	private int shipCount;
 	private double shipBuilding;
-	private double killRate;
 
 	/**
-	 * 
+	 * @param name
+	 * @param owner
+	 * @param location
+	 * @param shipRate
+	 * @param shipCount
+	 * @param killRate
 	 */
-	public Planet() {
+	protected Planet(final String name, final Owner owner,
+			final Point location, final double shipRate, final int shipCount,
+			final double killRate) {
+		super();
+		this.name = name;
+		this.owner = owner;
+		this.location = location;
+		this.shipRate = shipRate;
+		this.shipCount = shipCount;
+		this.killRate = killRate;
 	}
 
 	/**
 	 * @param p
 	 * @return
 	 */
-	protected boolean choose(double p) {
+	protected boolean choose(final double p) {
 		return Math.random() < p;
 	}
 
@@ -44,36 +58,20 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	 * The behavior of the planet in the universe is to build and store ships if
 	 * the planet is owned by someone.
 	 * 
-	 * @see org.mmarini.jquest.ITickTimer#doTickTime(double)
+	 * @see org.mmarini.jquest.TickTimer#doTickTime(double)
 	 */
 	@Override
-	public synchronized void doTickTime(double years) {
-		if (this.getOwner() == null)
+	public void doTickTime(double years) {
+		if (owner == null)
 			return;
-		double sb = this.getShipBuilding();
+		double sb = shipBuilding;
 		sb += years * this.getShipRate();
 		if (sb >= 1f) {
 			int ships = (int) Math.floor(sb);
 			sb -= ships;
 			this.setShipCount(this.getShipCount() + ships);
 		}
-		this.setShipBuilding(sb);
-	}
-
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object other) {
-		if (other == this)
-			return true;
-		if (!(other instanceof Planet))
-			return false;
-		String name = this.getName();
-		String otherName = ((Planet) other).getName();
-		if (name == null)
-			return false;
-		return name.equals(otherName);
+		setShipBuilding(sb);
 	}
 
 	/**
@@ -100,7 +98,7 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	/**
 	 * @return Returns the owner.
 	 */
-	public IOwner getOwner() {
+	public Owner getOwner() {
 		return owner;
 	}
 
@@ -140,8 +138,8 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	 */
 	public void handleFleetArrival(Fleet fleet) {
 		synchronized (this) {
-			IOwner planetOwner = this.getOwner();
-			IOwner fleetOwner = fleet.getOwner();
+			Owner planetOwner = this.getOwner();
+			Owner fleetOwner = fleet.getOwner();
 			int fleetShip = fleet.getShipCount();
 			int planetShip = this.getShipCount();
 			if (fleetOwner.equals(planetOwner)) {
@@ -157,35 +155,19 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 				double fleetKillRate = fleet.getKillRate();
 				double planetKillRate = this.getKillRate();
 				double p = fleetKillRate / (fleetKillRate + planetKillRate);
-				while (fleetShip > 0 && planetShip > 0) {
-					/*
-					 * 
-					 */
-					if (this.choose(p)) {
+				while (fleetShip > 0 && planetShip > 0)
+					if (choose(p))
 						--fleetShip;
-					} else {
+					else
 						--planetShip;
-					}
-				}
 				if (fleetShip > 0) {
 					planetShip = fleetShip;
-					this.setOwner(fleetOwner);
+					setOwner(fleetOwner);
 				}
-				this.setShipCount(planetShip);
+				setShipCount(planetShip);
 			}
 		}
-		this.getUniverse().removeFleet(fleet);
-	}
-
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		String name = this.getName();
-		if (name == null)
-			return 0;
-		return name.hashCode();
+		getUniverse().removeFleet(fleet);
 	}
 
 	/**
@@ -196,7 +178,7 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	 * @throws NoShipsException
 	 * @throws InvalidOwnerException
 	 */
-	public Fleet lunchFleet(IOwner owner, Planet destination, int ships)
+	public Fleet lunchFleet(Owner owner, Planet destination, int ships)
 			throws NoShipsException, InvalidOwnerException {
 		synchronized (this) {
 			/*
@@ -226,14 +208,6 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	}
 
 	/**
-	 * @param killRate
-	 *            The killRate to set.
-	 */
-	public void setKillRate(double killRate) {
-		this.killRate = killRate;
-	}
-
-	/**
 	 * @param location
 	 *            The location to set.
 	 */
@@ -242,18 +216,10 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	}
 
 	/**
-	 * @param name
-	 *            The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
 	 * @param owner
 	 *            The owner to set.
 	 */
-	public void setOwner(IOwner owner) {
+	public void setOwner(Owner owner) {
 		this.owner = owner;
 	}
 
@@ -274,18 +240,41 @@ public class Planet extends AbstractUniverseObject implements ITickTimer {
 	}
 
 	/**
-	 * @param shipRate
-	 *            The shipRate to set.
-	 */
-	public void setShipRate(double shipRate) {
-		this.shipRate = shipRate;
-	}
-
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return this.getName();
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Planet other = (Planet) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }

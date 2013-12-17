@@ -18,10 +18,19 @@ public class Point extends Point2D.Double {
 	public Point() {
 	}
 
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public Point(double x, double y) {
 		this.setLocation(x, y);
 	}
 
+	/**
+	 * 
+	 * @param point
+	 */
 	public Point(Point point) {
 		this.setLocation(point);
 	}

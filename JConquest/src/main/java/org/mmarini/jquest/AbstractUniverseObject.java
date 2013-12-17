@@ -5,11 +5,11 @@ package org.mmarini.jquest;
  * @version $Id: AbstractUniverseObject.java,v 1.1 2005/04/27 00:31:02 marco Exp
  *          $
  */
-public abstract class AbstractUniverseObject implements IUniverseObject {
+public abstract class AbstractUniverseObject implements UniverseObject {
 	private Universe universe;
 
 	/**
-	 * @see org.mmarini.jquest.IUniverseObject#attach(org.mmarini.jquest.Universe)
+	 * @see org.mmarini.jquest.UniverseObject#attach(org.mmarini.jquest.Universe)
 	 */
 	@Override
 	public void attach(Universe universe) {
@@ -17,7 +17,7 @@ public abstract class AbstractUniverseObject implements IUniverseObject {
 	}
 
 	/**
-	 * @see org.mmarini.jquest.IUniverseObject#detach(org.mmarini.jquest.Universe)
+	 * @see org.mmarini.jquest.UniverseObject#detach(org.mmarini.jquest.Universe)
 	 */
 	@Override
 	public void detach(Universe universe) {
@@ -25,7 +25,7 @@ public abstract class AbstractUniverseObject implements IUniverseObject {
 	}
 
 	/**
-	 * @see org.mmarini.jquest.IUniverseObject#getUniverse()
+	 * @see org.mmarini.jquest.UniverseObject#getUniverse()
 	 */
 	@Override
 	public Universe getUniverse() {

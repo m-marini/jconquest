@@ -4,11 +4,11 @@ package org.mmarini.jquest;
  * @author US00852
  * @version $Id: Fleet.java,v 1.2 2006/03/16 22:35:24 marco Exp $
  */
-public class Fleet extends AbstractUniverseObject implements ITickTimer {
+public class Fleet extends AbstractUniverseObject implements TickTimer {
 	private Point location;
 	private int shipCount;
 	private Planet destination;
-	private IOwner owner;
+	private Owner owner;
 	private double killRate;
 
 	/**
@@ -18,7 +18,7 @@ public class Fleet extends AbstractUniverseObject implements ITickTimer {
 	}
 
 	/**
-	 * @see org.mmarini.jquest.ITickTimer#doTickTime(double)
+	 * @see org.mmarini.jquest.TickTimer#doTickTime(double)
 	 */
 	@Override
 	public void doTickTime(double years) {
@@ -45,7 +45,7 @@ public class Fleet extends AbstractUniverseObject implements ITickTimer {
 	 * @return
 	 */
 	public double getArrivalTime() {
-		return this.getTimeToArrive() + this.getUniverse().getTime();
+		return getTimeToArrive() + getUniverse().getTime();
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class Fleet extends AbstractUniverseObject implements ITickTimer {
 	/**
 	 * @return Returns the owner.
 	 */
-	public IOwner getOwner() {
+	public Owner getOwner() {
 		return owner;
 	}
 
@@ -119,7 +119,7 @@ public class Fleet extends AbstractUniverseObject implements ITickTimer {
 	 * @param owner
 	 *            The owner to set.
 	 */
-	public void setOwner(IOwner owner) {
+	public void setOwner(Owner owner) {
 		this.owner = owner;
 	}
 

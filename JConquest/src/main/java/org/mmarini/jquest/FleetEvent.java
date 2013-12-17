@@ -7,10 +7,6 @@ import java.util.EventObject;
  * @version $Id: FleetEvent.java,v 1.1 2005/04/27 00:31:02 marco Exp $
  */
 public class FleetEvent extends EventObject {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -20,6 +16,10 @@ public class FleetEvent extends EventObject {
 		super(source);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Fleet getFleet() {
 		return (Fleet) this.getSource();
 	}

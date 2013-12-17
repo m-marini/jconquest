@@ -5,32 +5,18 @@ package org.mmarini.jquest;
  * @version $Id: AbstractOwner.java,v 1.2 2006/03/16 22:35:24 marco Exp $
  */
 public abstract class AbstractOwner extends AbstractUniverseObject implements
-		IOwner {
-	private String name;
-	private int ordinal;
+		Owner {
+	private final String name;
 
 	/**
 	 * @param name
 	 */
-	public AbstractOwner(int ordinal, String name) {
+	public AbstractOwner(final String name) {
 		this.name = name;
-		this.ordinal = ordinal;
 	}
 
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object other) {
-		if (this == other)
-			return true;
-		if (!(other instanceof AbstractOwner))
-			return false;
-		return this.getOrdinal() == ((AbstractOwner) other).getOrdinal();
-	}
-
-	/**
-	 * @see org.mmarini.jquest.IOwner#getName()
+	 * @see org.mmarini.jquest.Owner#getName()
 	 */
 	@Override
 	public String getName() {
@@ -38,11 +24,11 @@ public abstract class AbstractOwner extends AbstractUniverseObject implements
 	}
 
 	/**
-	 * @see org.mmarini.jquest.IOwner#getOrdinal()
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public int getOrdinal() {
-		return ordinal;
+	public String toString() {
+		return String.valueOf(name);
 	}
 
 	/**
@@ -50,14 +36,29 @@ public abstract class AbstractOwner extends AbstractUniverseObject implements
 	 */
 	@Override
 	public int hashCode() {
-		return this.getOrdinal();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
 	/**
-	 * @see java.lang.Object#toString()
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public String toString() {
-		return this.getName();
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractOwner other = (AbstractOwner) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }

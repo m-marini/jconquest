@@ -8,7 +8,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.mmarini.jquest.Constants;
-import org.mmarini.jquest.IOwner;
+import org.mmarini.jquest.Owner;
 import org.mmarini.jquest.Planet;
 import org.mmarini.jquest.Point;
 
@@ -108,15 +108,15 @@ public class InfoPane extends JPanel {
 		infoText.append(planet.getName());
 		appendln();
 
-		final IOwner owner = planet.getOwner();
-		append("InfoPane.owned.text", owner != null ? owner.getName()
-				: Messages.getString("InfoPane.none.text")); //$NON-NLS-1$
+		final Owner owner = planet.getOwner();
+		append("InfoPane.owned.text", owner != null ? owner.getName() //$NON-NLS-1$
+				: ""); //$NON-NLS-1$
 		appendln();
 
 		append("InfoPane.buildingRate.text", planet.getShipRate()); //$NON-NLS-1$
 		appendln();
 
-		append("InfoPane.killRate.text", planet.getKillRate()); //$NON-NLS-1$
+		append("InfoPane.killRate.text", planet.getKillRate() * 100); //$NON-NLS-1$
 		appendln();
 
 		if (planet.getOwner() != null)

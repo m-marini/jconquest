@@ -7,18 +7,17 @@ package org.mmarini.jquest;
 public class Human extends AbstractOwner {
 
 	/**
-	 * @param ordinal
 	 * @param name
 	 */
-	public Human(int ordinal, String name) {
-		super(ordinal, name);
+	public Human(final String name) {
+		super(name);
 	}
 
 	/**
-	 * @see org.mmarini.jquest.ITickTimer#doTickTime(double)
+	 * @see org.mmarini.jquest.TickTimer#doTickTime(double)
 	 */
 	@Override
-	public void doTickTime(double years) {
+	public void doTickTime(final double years) {
 	}
 
 }

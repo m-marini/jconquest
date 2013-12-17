@@ -27,9 +27,9 @@ public class OptionGamePane extends JPanel {
 	public static final int FAST_REACTION = 2;
 	public static final int IMMEDIATE_REACTION = 3;
 
-	private JSpinner ownerComponent;
-	private JSpinner planetComponent;
-	private JComboBox opponentReaction;
+	private final JSpinner ownerComponent;
+	private final JSpinner planetComponent;
+	private final JComboBox<String> opponentReaction;
 
 	/**
 	 * 
@@ -37,77 +37,58 @@ public class OptionGamePane extends JPanel {
 	public OptionGamePane() {
 		ownerComponent = new JSpinner();
 		planetComponent = new JSpinner();
-		opponentReaction = new JComboBox();
+		opponentReaction = new JComboBox<>();
 		init();
-	}
-
-	/**
-	 * @return Returns the opponentReaction.
-	 */
-	protected JComboBox getOpponentReaction() {
-		return opponentReaction;
-	}
-
-	/**
-	 * @return Returns the opponentSlider.
-	 */
-	protected JSpinner getOwnerComponent() {
-		return ownerComponent;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getOwnerCount() {
-		return ((Number) this.getOwnerComponent().getValue()).intValue();
-	}
-
-	/**
-	 * @return Returns the planetSlider.
-	 */
-	protected JSpinner getPlanetComponent() {
-		return planetComponent;
+		return ((Number) ownerComponent.getValue()).intValue();
 	}
 
 	/**
 	 * @return
 	 */
 	public int getPlanetCount() {
-		return ((Number) this.getPlanetComponent().getValue()).intValue();
+		return ((Number) planetComponent.getValue()).intValue();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getReaction() {
-		return this.getOpponentReaction().getSelectedIndex();
+		return opponentReaction.getSelectedIndex();
 	}
 
 	/**
 	 * 
 	 */
 	protected void init() {
-		// this.setLayout(new GridBagLayout());
-		JComboBox list = this.getOpponentReaction();
-		list.addItem("Slow");
-		list.addItem("Normal");
-		list.addItem("Fast");
-		list.addItem("Immediate");
-		list.setSelectedIndex(NORMAL_REACTION);
+		opponentReaction
+				.addItem(Messages.getString("OptionGamePane.slow.text")); //$NON-NLS-1$
+		opponentReaction.addItem(Messages
+				.getString("OptionGamePane.normal.text")); //$NON-NLS-1$
+		opponentReaction
+				.addItem(Messages.getString("OptionGamePane.fast.text")); //$NON-NLS-1$
+		opponentReaction.addItem(Messages
+				.getString("OptionGamePane.immediate.text")); //$NON-NLS-1$
+		opponentReaction.setSelectedIndex(NORMAL_REACTION);
 
-		SpinnerNumberModel model = new SpinnerNumberModel(2, 2, UniverseBuilder
-				.getInstance().getMaxOwnerCount(), 1);
-		JSpinner spinner = this.getOwnerComponent();
-		spinner.setModel(model);
-		model = new SpinnerNumberModel(3, 1, UniverseBuilder.getInstance()
-				.getMaxPlanetCount(), 1);
-		spinner = this.getPlanetComponent();
-		spinner.setModel(model);
+		ownerComponent.setModel(new SpinnerNumberModel(2, 2, UniverseBuilder
+				.getInstance().getMaxOwnerCount(), 1));
+		planetComponent.setModel(new SpinnerNumberModel(3, 1, UniverseBuilder
+				.getInstance().getMaxPlanetCount(), 1));
 
 		GridBagLayout gbl = new GridBagLayout();
-		this.setLayout(gbl);
+		setLayout(gbl);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(2, 2, 2, 2);
 
-		JComponent comp;
-		comp = new JLabel("Reaction level");
+		final JComponent l1 = new JLabel(
+				Messages.getString("OptionGamePane.reaction.text")); //$NON-NLS-1$
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.gridwidth = 1;
@@ -116,10 +97,9 @@ public class OptionGamePane extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		gbl.setConstraints(comp, gbc);
-		this.add(comp);
+		gbl.setConstraints(l1, gbc);
+		this.add(l1);
 
-		comp = this.getOpponentReaction();
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		gbc.gridwidth = 1;
@@ -128,10 +108,11 @@ public class OptionGamePane extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		gbl.setConstraints(comp, gbc);
-		this.add(comp);
+		gbl.setConstraints(opponentReaction, gbc);
+		this.add(opponentReaction);
 
-		comp = new JLabel("Owner count");
+		final JLabel l2 = new JLabel(
+				Messages.getString("OptionGamePane.onwerCount.text")); //$NON-NLS-1$
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
@@ -140,10 +121,9 @@ public class OptionGamePane extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		gbl.setConstraints(comp, gbc);
-		this.add(comp);
+		gbl.setConstraints(l2, gbc);
+		add(l2);
 
-		comp = this.getOwnerComponent();
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
@@ -152,10 +132,11 @@ public class OptionGamePane extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		gbl.setConstraints(comp, gbc);
-		this.add(comp);
+		gbl.setConstraints(ownerComponent, gbc);
+		add(ownerComponent);
 
-		comp = new JLabel("Planet count");
+		final JLabel l3 = new JLabel(
+				Messages.getString("OptionGamePane.planetCount.text")); //$NON-NLS-1$
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.gridwidth = 1;
@@ -164,10 +145,9 @@ public class OptionGamePane extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		gbl.setConstraints(comp, gbc);
-		this.add(comp);
+		gbl.setConstraints(l3, gbc);
+		add(l3);
 
-		comp = this.getPlanetComponent();
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		gbc.gridwidth = 1;
@@ -176,7 +156,7 @@ public class OptionGamePane extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.weightx = 0;
 		gbc.weighty = 0;
-		gbl.setConstraints(comp, gbc);
-		this.add(comp);
+		gbl.setConstraints(planetComponent, gbc);
+		add(planetComponent);
 	}
 }

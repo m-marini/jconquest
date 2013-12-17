@@ -1,50 +1,25 @@
 package org.mmarini.jquest;
 
 /**
+ * The strategy context is the interface used by concrete Strategy to interact
+ * with the universe
+ * 
  * @author US00852
- * @version $Id: StrategyContext.java,v 1.2 2006/03/16 22:35:24 marco Exp $
+ * @version $Id: IStrategyContext.java,v 1.2 2006/03/16 22:35:24 marco Exp $
  */
-public class StrategyContext implements IStrategyContext {
-	private IStrategy strategy;
-	private IOwner owner;
+public interface StrategyContext {
 
 	/**
-	 * @param owner
+	 * Gets the owner subject of the strategy
+	 * 
+	 * @return the owner
 	 */
-	public StrategyContext(IOwner owner, IStrategy strategy) {
-		this.owner = owner;
-		this.strategy = strategy;
-	}
+	public abstract Owner getOwner();
 
 	/**
-	 * @see org.mmarini.jquest.IStrategyContext#getOwner()
+	 * Gets the universe
+	 * 
+	 * @return the universe
 	 */
-	@Override
-	public IOwner getOwner() {
-		return owner;
-	}
-
-	/**
-	 * @see org.mmarini.jquest.IStrategyContext#getStrategy()
-	 */
-	@Override
-	public IStrategy getStrategy() {
-		return strategy;
-	}
-
-	/**
-	 * @see org.mmarini.jquest.IStrategyContext#getUniverse()
-	 */
-	@Override
-	public Universe getUniverse() {
-		return owner.getUniverse();
-	}
-
-	/**
-	 * @see org.mmarini.jquest.IStrategyContext#setStrategy(org.mmarini.jquest.IStrategy)
-	 */
-	@Override
-	public void setStrategy(IStrategy strategy) {
-		this.strategy = strategy;
-	}
+	public abstract Universe getUniverse();
 }

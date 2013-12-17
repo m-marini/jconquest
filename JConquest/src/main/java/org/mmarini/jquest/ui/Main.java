@@ -4,9 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Formatter;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -24,6 +23,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 import org.mmarini.jquest.InvalidOwnerException;
 import org.mmarini.jquest.NoShipsException;
@@ -40,7 +40,7 @@ public class Main {
 	/**
 	 * Game period (msec)
 	 */
-	public static final long BASE_GAME_PERIOD = 20;
+	public static final int BASE_GAME_PERIOD = 20;
 
 	/**
 	 * Game speed (years / msec)
@@ -103,7 +103,12 @@ public class Main {
 	 */
 	public Main() throws HeadlessException {
 		super();
-		timer = new Timer("Game clock", true); //$NON-NLS-1$
+		timer = new Timer(BASE_GAME_PERIOD, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tickTime();
+			}
+		});
 		frame = new JFrame();
 		mapPane = new MapPane();
 		infoPane = new InfoPane();
@@ -200,6 +205,7 @@ public class Main {
 				infoPane.clear();
 			}
 		};
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	/**
@@ -316,12 +322,7 @@ public class Main {
 		cp.add(splitPane1, BorderLayout.CENTER);
 
 		createListeners();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				tickTime();
-			}
-		}, 0, BASE_GAME_PERIOD);
+		timer.start();
 	}
 
 	/**
@@ -423,6 +424,7 @@ public class Main {
 			logPane.setText(""); //$NON-NLS-1$
 			log("Main.gameStart.text"); //$NON-NLS-1$
 			year = 0;
+			frame.repaint();
 		} catch (PlanetCountOutOfBoundException e) {
 			log(e.getMessage());
 			e.printStackTrace();

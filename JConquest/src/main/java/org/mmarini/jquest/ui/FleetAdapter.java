@@ -4,8 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.util.Map;
 
 import org.mmarini.jquest.Fleet;
+import org.mmarini.jquest.Owner;
 import org.mmarini.jquest.Planet;
 import org.mmarini.jquest.Point;
 
@@ -16,51 +18,43 @@ import org.mmarini.jquest.Point;
 public class FleetAdapter {
 	public static final BasicStroke NO_SIZE_LINE_STROKE = new BasicStroke(0);
 
-	private Fleet fleet;
-	private FleetShape shape = new FleetShape();
+	private final Fleet fleet;
+	private final Map<Owner, Color> colorMap;
+
+	/**
+	 * s
+	 * 
+	 * @param colorMap
+	 * 
+	 */
+	public FleetAdapter(final Fleet fleet, final Map<Owner, Color> colorMap) {
+		this.fleet = fleet;
+		this.colorMap = colorMap;
+	}
 
 	/**
 	 * @param g
 	 */
 	public void draw(Graphics2D g) {
-		Fleet fleet = this.getFleet();
-		Color col = OwnerUtils.getInstance().getColor(fleet.getOwner());
-		g.setColor(col);
-		Shape shape = this.getShape();
-		g.fill(shape);
-	}
-
-	/**
-	 * @return Returns the fleet.
-	 */
-	public Fleet getFleet() {
-		return fleet;
+		final Color c = colorMap.get(fleet.getOwner());
+		g.setColor(c != null ? c : Color.LIGHT_GRAY);
+		g.fill(createShape());
 	}
 
 	/**
 	 * @return
 	 */
-	public Shape getShape() {
-		Fleet fleet = this.getFleet();
-		Point fLoc = fleet.getLocation();
-		double x = fLoc.getX();
-		double y = fLoc.getY();
-		shape.setLocation(x, y);
+	private Shape createShape() {
+		final Point fLoc = fleet.getLocation();
+		final double x = fLoc.getX();
+		final double y = fLoc.getY();
 
-		Planet dest = fleet.getDestination();
-		Point dLoc = dest.getLocation();
-		double dx = dLoc.getX() - x;
-		double dy = dLoc.getY() - y;
-		double theta = Math.atan2(-dx, dy);
-		shape.setRotation(theta);
-		return shape;
-	}
+		final Planet dest = fleet.getDestination();
+		final Point dLoc = dest.getLocation();
+		final double dx = dLoc.getX() - x;
+		final double dy = dLoc.getY() - y;
+		final double theta = Math.atan2(-dx, dy);
 
-	/**
-	 * @param fleet
-	 *            The fleet to set.
-	 */
-	public void setFleet(Fleet fleet) {
-		this.fleet = fleet;
+		return new FleetShape(x, y, theta);
 	}
 }

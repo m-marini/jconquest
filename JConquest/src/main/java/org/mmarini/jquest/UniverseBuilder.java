@@ -1,18 +1,16 @@
 package org.mmarini.jquest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 
 /**
  * @author US00852
  * @version $Id: UniverseBuilder.java,v 1.2 2006/03/16 22:35:24 marco Exp $
  */
 public class UniverseBuilder {
-	private static UniverseBuilder instance = new UniverseBuilder();
+	private static final UniverseBuilder instance = new UniverseBuilder();
 
 	/**
 	 * @return Returns the instance.
@@ -21,37 +19,23 @@ public class UniverseBuilder {
 		return instance;
 	}
 
-	private ResourceBundle bundle;
-	private List<String> planet;
-	private List<String> owner;
+	private static final String[] PLANET_NAMES = { "Phobeus", "Gruenge",
+			"Lutor", "Zurg", "Astor", "Bolteus", "Castor", "Yultot", "Nemesi",
+			"Filteo", "Proto", "Vega", "Gianto", "Shanti", "Alamir", "Zhango",
+			"Thetra", "Klindon", "Ork", "Degobar" };
+
+	private static final int MAX_PLANET_COUNT = PLANET_NAMES.length;
+	private static final String[] OWNER_NAMES = { "Raman", "Kirk", "Ian",
+			"Zhang", "Ibram", "Marcus", "Romulo", "Jabu", "Franzo", "Alhimah",
+			"Khan", "Ular", "Shimoko", "Ngana", "Pacha", "Khoal", "Krungen",
+			"Mhara", "Hari", "Olrich" };
+
+	private static final int MAX_OWNER_COUNT = OWNER_NAMES.length;
 
 	/**
 	 * 
 	 */
 	private UniverseBuilder() {
-		planet = new ArrayList<String>();
-		owner = new ArrayList<String>();
-		bundle = ResourceBundle.getBundle(this.getClass().getName() + "Res");
-		try {
-			String planetName = bundle.getString("planet.names");
-			List<String> list = this.getPlanet();
-			for (StringTokenizer token = new StringTokenizer(planetName, ","); token
-					.hasMoreTokens();) {
-				list.add(token.nextToken().trim());
-			}
-		} catch (MissingResourceException e) {
-			e.printStackTrace();
-		}
-		try {
-			String ownerName = bundle.getString("owner.names");
-			List<String> list = this.getOwner();
-			for (StringTokenizer token = new StringTokenizer(ownerName, ","); token
-					.hasMoreTokens();) {
-				list.add(token.nextToken().trim());
-			}
-		} catch (MissingResourceException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -60,103 +44,89 @@ public class UniverseBuilder {
 	 * @return
 	 * @throws PlanetCountOutOfBoundException
 	 */
-	public Universe createUniverse(int opponentCount, int planetCount,
-			double reaction) throws PlanetCountOutOfBoundException {
-		int maxPlanetCount = this.getMaxPlanetCount();
-		if (planetCount > maxPlanetCount)
+	public Universe createUniverse(final int opponentCount,
+			final int planetCount, final double reaction)
+			throws PlanetCountOutOfBoundException {
+		if (planetCount > MAX_PLANET_COUNT)
 			throw new PlanetCountOutOfBoundException("The planet count "
 					+ planetCount + " exceeds the maximum value "
-					+ maxPlanetCount);
-		int maxOwnerCount = this.getMaxOwnerCount();
-		if (opponentCount > maxOwnerCount)
+					+ MAX_PLANET_COUNT);
+
+		if (opponentCount > MAX_OWNER_COUNT)
 			throw new PlanetCountOutOfBoundException("The opponent count "
 					+ opponentCount + " exceeds the maximum value "
-					+ maxOwnerCount);
+					+ MAX_OWNER_COUNT);
+
 		if (opponentCount > planetCount - 1)
 			throw new PlanetCountOutOfBoundException("The opponent count "
 					+ opponentCount + " exceeds the maximum value "
 					+ (planetCount - 1));
 
-		List<String> ownerName = this.getOwner();
-		Collections.shuffle(ownerName);
-		List<String> planetName = this.getPlanet();
-		Collections.shuffle(planetName);
+		final List<String> owners = new ArrayList<>(Arrays.asList(OWNER_NAMES));
+		final List<String> planets = new ArrayList<>(
+				Arrays.asList(PLANET_NAMES));
+		Collections.shuffle(owners);
+		Collections.shuffle(planets);
 
-		Universe universe = new Universe();
-		for (int i = 0; i < opponentCount + 1; ++i) {
-			IOwner owner;
-			String name = ownerName.get(i);
-			if (i == 0) {
-				Human human = new Human(i, name);
-				universe.setHuman(human);
-				owner = human;
-			} else {
-				AutoOwner autoOwner = new AutoOwner(i, name);
-				autoOwner.setReaction(reaction);
-				owner = autoOwner;
-			}
-			universe.addOwner(owner);
-			Planet planet = new Planet();
-			planet.setName(planetName.get(i));
-			Point location = universe.createLocation();
-			planet.setLocation(location);
-			planet.setOwner(owner);
-			planet.setShipCount(Constants.OWNER_SHIP_COUNT);
-			planet.setShipRate(Constants.OWNER_SHIP_RATE);
-			planet.setKillRate(Constants.OWNER_KILL_RATE);
-			universe.addPlanet(planet);
+		final Universe universe = new Universe();
+		final Human human = new Human(owners.get(0));
+		universe.setHuman(human);
+		universe.addOwner(human);
+		universe.addPlanet(createPlanet(planets.get(0), human,
+				universe.createLocation()));
+
+		for (int i = 0; i < opponentCount; ++i) {
+			final Owner o = new AutoOwner(owners.get(i + 1), reaction);
+			universe.addOwner(o);
+			universe.addPlanet(createPlanet(planets.get(i + 1), o,
+					universe.createLocation()));
 		}
 
-		for (int i = opponentCount + 1; i < planetCount; ++i) {
-			Planet planet = new Planet();
-			planet.setName(planetName.get(i));
-			Point location = universe.createLocation();
-			planet.setLocation(location);
-			double shipRate = (Constants.MIN_SHIP_RATE + (Constants.MAX_SHIP_RATE - Constants.MIN_SHIP_RATE)
-					* Math.random());
-			planet.setShipRate(shipRate);
-			int ship = (int) Math.round(shipRate * (Math.random() + .5));
-			planet.setShipCount(ship);
-			double killRate = (Math.random() * (Constants.MAX_KILL_RATE - Constants.MIN_KILL_RATE))
-					+ Constants.MIN_KILL_RATE;
-			planet.setKillRate(killRate);
-			universe.addPlanet(planet);
-		}
+		for (final String n : planets.subList(opponentCount + 1, planetCount))
+			universe.addPlanet(createRandomPlanet(n, universe.createLocation()));
+
 		return universe;
 	}
 
 	/**
-	 * @return Returns the bundle.
+	 * 
+	 * @param name
+	 * @param location
+	 * @return
 	 */
-	protected ResourceBundle getBundle() {
-		return bundle;
+	private Planet createRandomPlanet(final String name, final Point location) {
+		final double sr = (Constants.MIN_SHIP_RATE + (Constants.MAX_SHIP_RATE - Constants.MIN_SHIP_RATE)
+				* Math.random());
+		final int sc = (int) Math.round(sr * (Math.random() + .5));
+		final double kr = (Math.random() * (Constants.MAX_KILL_RATE - Constants.MIN_KILL_RATE))
+				+ Constants.MIN_KILL_RATE;
+		return new Planet(name, null, location, sr, sc, kr);
+	}
+
+	/**
+	 * 
+	 * @param pn
+	 * @param owner
+	 * @param location
+	 * @return
+	 */
+	private Planet createPlanet(final String pn, final Owner owner,
+			final Point location) {
+		return new Planet(pn, owner, location, Constants.OWNER_SHIP_RATE,
+				Constants.OWNER_SHIP_COUNT, Constants.OWNER_KILL_RATE);
 	}
 
 	/**
 	 * @return
 	 */
 	public int getMaxOwnerCount() {
-		return this.getOwner().size();
+		return MAX_OWNER_COUNT;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getMaxPlanetCount() {
-		return this.getPlanet().size();
-	}
-
-	/**
-	 * @return Returns the owner.
-	 */
-	protected List<String> getOwner() {
-		return owner;
-	}
-
-	/**
-	 * @return Returns the name.
-	 */
-	protected List<String> getPlanet() {
-		return planet;
+		return MAX_PLANET_COUNT;
 	}
 }

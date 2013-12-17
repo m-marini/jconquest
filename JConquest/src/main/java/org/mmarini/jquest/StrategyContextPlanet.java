@@ -5,7 +5,7 @@ package org.mmarini.jquest;
  * @version $Id: StrategyContextPlanet.java,v 1.1.2.1 2005/05/01 10:01:38 marco
  *          Exp $
  */
-public class StrategyContextPlanet extends AbstractPlanetAdapter {
+public class StrategyContextPlanet {
 	class TargetEvaluation implements Comparable<TargetEvaluation> {
 		private static final int CLASS_COUNT = 10;
 		private static final double KILL_RATE_CLASS_SIZE = (Constants.MAX_KILL_RATE - Constants.MIN_KILL_RATE)
@@ -14,14 +14,15 @@ public class StrategyContextPlanet extends AbstractPlanetAdapter {
 				/ CLASS_COUNT;
 		private static final double SHIP_CLASS_SIZE = 2d;
 
-		private StrategyContextPlanet planet;
-		private int shipToWin;
+		private final StrategyContextPlanet planet;
+		private final int shipToWin;
 
 		/**
 		 * @param planet
 		 * @param from
 		 */
-		public TargetEvaluation(StrategyContextPlanet planet, Planet from) {
+		public TargetEvaluation(StrategyContextPlanet planet,
+				StrategyContextPlanet from) {
 			this.planet = planet;
 			shipToWin = planet.getShipToWin(from);
 		}
@@ -32,10 +33,10 @@ public class StrategyContextPlanet extends AbstractPlanetAdapter {
 		@Override
 		public int compareTo(TargetEvaluation other) {
 			int diff;
-			diff = this.getShipClass() - other.getShipClass();
+			diff = getShipClass() - other.getShipClass();
 			if (diff != 0)
 				return diff;
-			diff = this.getShipRateClass() - other.getShipRateClass();
+			diff = getShipRateClass() - other.getShipRateClass();
 			if (diff != 0)
 				return diff;
 			diff = this.getKillRateClass() - other.getKillRateClass();
@@ -48,18 +49,18 @@ public class StrategyContextPlanet extends AbstractPlanetAdapter {
 		}
 
 		protected int getKillRateClass() {
-			int classId = this.getClassValue(planet.getKillRate(),
+			int classId = getClassValue(planet.getKillRate(),
 					Constants.MIN_SHIP_RATE, KILL_RATE_CLASS_SIZE);
 			return classId;
 		}
 
 		protected int getShipClass() {
-			int classId = this.getClassValue(shipToWin, 0, SHIP_CLASS_SIZE);
+			int classId = getClassValue(shipToWin, 0, SHIP_CLASS_SIZE);
 			return classId;
 		}
 
 		protected int getShipRateClass() {
-			int classId = this.getClassValue(planet.getShipRate(),
+			int classId = getClassValue(planet.getShipRate(),
 					Constants.MIN_SHIP_RATE, SHIP_RATE_CLASS_SIZE);
 			return -classId;
 		}
@@ -69,23 +70,17 @@ public class StrategyContextPlanet extends AbstractPlanetAdapter {
 		 */
 		@Override
 		public String toString() {
-			StringBuffer bfr = new StringBuffer();
-			bfr.append(planet.getName());
-			bfr.append(" value = ");
-			bfr.append(this.shipToWin);
-			bfr.append(", ");
-			bfr.append(this.planet.getShipRate());
-			bfr.append(", ");
-			bfr.append(this.planet.getKillRate());
-			return bfr.toString();
+			return String.valueOf(planet);
 		}
-	};
+	}
+
+	private final Planet planet;
 
 	/**
 	 * @param planet
 	 */
-	public StrategyContextPlanet(Planet planet) {
-		super(planet);
+	public StrategyContextPlanet(final Planet planet) {
+		this.planet = planet;
 	}
 
 	/**
@@ -93,26 +88,97 @@ public class StrategyContextPlanet extends AbstractPlanetAdapter {
 	 */
 	public double getDefense() {
 		double shipCount;
-		if (this.getOwner() != null)
-			shipCount = this.getShipCount();
+		if (getOwner() != null)
+			shipCount = getShipCount();
 		else
-			shipCount = this.getShipRate() * 1.5;
-		return shipCount * (1 - this.getKillRate());
+			shipCount = getShipRate() * 1.5;
+		return shipCount * (1 - getKillRate());
 	}
 
-	public int getShipToWin(Planet from) {
+	public int getShipToWin(StrategyContextPlanet from) {
 		double shipToWin = this.getDefense() / (1 + from.getKillRate());
-		if (this.getOwner() != null)
+		if (getOwner() != null)
 			shipToWin += getTimeToArrive(from) * this.getShipRate();
 		return (int) Math.round(shipToWin + 1);
 	}
 
-	public TargetEvaluation getTargetEvaluation(Planet from) {
+	/**
+	 * 
+	 * @param from
+	 * @return
+	 */
+	public TargetEvaluation getTargetEvaluation(StrategyContextPlanet from) {
 		return new TargetEvaluation(this, from);
 	}
 
-	public double getTimeToArrive(Planet from) {
-		double dist = this.getLocation().distance(from.getLocation());
+	/**
+	 * 
+	 * @param from
+	 * @return
+	 */
+	public double getTimeToArrive(StrategyContextPlanet from) {
+		double dist = getLocation().distance(from.getLocation());
 		return dist * Constants.FLEET_SPEED;
+	}
+
+	/**
+	 * @return
+	 * @see org.mmarini.jquest.Planet#getKillRate()
+	 */
+	public double getKillRate() {
+		return planet.getKillRate();
+	}
+
+	/**
+	 * @return
+	 * @see org.mmarini.jquest.Planet#getShipRate()
+	 */
+	public double getShipRate() {
+		return planet.getShipRate();
+	}
+
+	/**
+	 * @return
+	 * @see org.mmarini.jquest.Planet#getShipCount()
+	 */
+	public int getShipCount() {
+		return planet.getShipCount();
+	}
+
+	/**
+	 * @return
+	 * @see org.mmarini.jquest.Planet#getOwner()
+	 */
+	public Owner getOwner() {
+		return planet.getOwner();
+	}
+
+	/**
+	 * @return
+	 * @see org.mmarini.jquest.Planet#getLocation()
+	 */
+	public Point getLocation() {
+		return planet.getLocation();
+	}
+
+	/**
+	 * @param owner
+	 * @param destination
+	 * @param ships
+	 * @return
+	 * @throws NoShipsException
+	 * @throws InvalidOwnerException
+	 * @see org.mmarini.jquest.Planet#lunchFleet(org.mmarini.jquest.Owner, org.mmarini.jquest.Planet, int)
+	 */
+	public Fleet lunchFleet(Owner owner, Planet destination, int ships)
+			throws NoShipsException, InvalidOwnerException {
+		return planet.lunchFleet(owner, destination, ships);
+	}
+
+	/**
+	 * @return the planet
+	 */
+	public Planet getPlanet() {
+		return planet;
 	}
 }
