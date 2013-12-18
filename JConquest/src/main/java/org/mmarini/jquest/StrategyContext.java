@@ -12,18 +12,10 @@ import java.util.List;
 public interface StrategyContext {
 
 	/**
-	 * Gets the owner subject of the strategy
 	 * 
-	 * @return the owner
+	 * @return
 	 */
-	public abstract Owner getOwner();
-
-	/**
-	 * Gets the universe
-	 * 
-	 * @return the universe
-	 */
-	public abstract Universe getUniverse();
+	public abstract List<Planet> getEnemyPlanet();
 
 	/**
 	 * 
@@ -38,8 +30,16 @@ public interface StrategyContext {
 	public abstract List<Planet> getNativePlanet();
 
 	/**
+	 * Gets the owner subject of the strategy
 	 * 
-	 * @return
+	 * @return the owner
 	 */
-	public abstract List<Planet> getEnemyPlanet();
+	public abstract Owner getOwner();
+
+	/**
+	 * Gets the universe
+	 * 
+	 * @return the universe
+	 */
+	public abstract Universe getUniverse();
 }

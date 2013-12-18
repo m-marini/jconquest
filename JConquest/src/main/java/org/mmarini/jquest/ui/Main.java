@@ -63,6 +63,15 @@ public class Main {
 			60000 * BASE_GAME_SPEED, 10000 * BASE_GAME_SPEED,
 			1000 * BASE_GAME_SPEED, 0 };
 
+	/**
+	 * 
+	 * @param args
+	 * @throws Throwable
+	 */
+	public static void main(String[] args) throws Throwable {
+		new Main().run();
+	}
+
 	private double gameSpeed;
 	private final JFrame frame;
 	private final Action newGameAction;
@@ -78,38 +87,20 @@ public class Main {
 	private int year;
 	private final Timer timer;
 	private final MapListener fleetPlanListener;
+
 	private final OptionGamePane optGamePane;
-
-	/**
-	 * 
-	 * @param args
-	 * @throws Throwable
-	 */
-	public static void main(String[] args) throws Throwable {
-		new Main().run();
-	}
-
-	/**
-	 * 
-	 */
-	private void run() {
-		frame.setSize(800, 600);
-		frame.setVisible(true);
-		init();
-	}
 
 	/**
 	 * @throws java.awt.HeadlessException
 	 */
 	public Main() throws HeadlessException {
-		super();
 		timer = new Timer(BASE_GAME_PERIOD, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tickTime();
 			}
 		});
-		frame = new JFrame();
+		frame = new JFrame(Messages.getString("Main.title.text")); //$NON-NLS-1$
 		mapPane = new MapPane();
 		infoPane = new InfoPane();
 		logPane = new JTextArea();
@@ -432,6 +423,15 @@ public class Main {
 					Messages.getString("Main.error.title"), //$NON-NLS-1$
 					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private void run() {
+		frame.setSize(800, 600);
+		frame.setVisible(true);
+		init();
 	}
 
 	/**

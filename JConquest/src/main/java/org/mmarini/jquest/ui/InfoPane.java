@@ -36,6 +36,24 @@ public class InfoPane extends JPanel {
 
 	/**
 	 * 
+	 * @param key
+	 * @param args
+	 */
+	private void append(final String key, final Object... args) {
+		final Formatter f = new Formatter();
+		infoText.append(f.format(Messages.getString(key), args).toString());
+		f.close();
+	}
+
+	/**
+	 * 
+	 */
+	private void appendln() {
+		infoText.append("\n"); //$NON-NLS-1$
+	}
+
+	/**
+	 * 
 	 *
 	 */
 	public void clear() {
@@ -81,24 +99,6 @@ public class InfoPane extends JPanel {
 			append("InfoPane.destPlanet.text"); //$NON-NLS-1$
 			showPlanetInfo(destination);
 		}
-	}
-
-	/**
-	 * 
-	 */
-	private void appendln() {
-		infoText.append("\n"); //$NON-NLS-1$
-	}
-
-	/**
-	 * 
-	 * @param key
-	 * @param args
-	 */
-	private void append(final String key, final Object... args) {
-		final Formatter f = new Formatter();
-		infoText.append(f.format(Messages.getString(key), args).toString()); //$NON-NLS-1$
-		f.close();
 	}
 
 	/**

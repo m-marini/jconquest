@@ -34,9 +34,8 @@ public class Planet extends AbstractUniverseObject implements TickTimer {
 	 * @param shipCount
 	 * @param killRate
 	 */
-	protected Planet(final String name, final Owner owner,
-			final Point location, final double shipRate, final int shipCount,
-			final double killRate) {
+	public Planet(final String name, final Owner owner, final Point location,
+			final double shipRate, final int shipCount, final double killRate) {
 		super();
 		this.name = name;
 		this.owner = owner;
@@ -50,7 +49,7 @@ public class Planet extends AbstractUniverseObject implements TickTimer {
 	 * @param p
 	 * @return
 	 */
-	protected boolean choose(final double p) {
+	private boolean choose(final double p) {
 		return Math.random() < p;
 	}
 
@@ -65,13 +64,33 @@ public class Planet extends AbstractUniverseObject implements TickTimer {
 		if (owner == null)
 			return;
 		double sb = shipBuilding;
-		sb += years * this.getShipRate();
+		sb += years * shipRate;
 		if (sb >= 1f) {
 			int ships = (int) Math.floor(sb);
 			sb -= ships;
-			this.setShipCount(this.getShipCount() + ships);
+			shipCount += ships;
 		}
-		setShipBuilding(sb);
+		shipBuilding = sb;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Planet other = (Planet) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 	/**
@@ -103,13 +122,6 @@ public class Planet extends AbstractUniverseObject implements TickTimer {
 	}
 
 	/**
-	 * @return Returns the shipBuilding.
-	 */
-	protected double getShipBuilding() {
-		return shipBuilding;
-	}
-
-	/**
 	 * @return Returns the shipCount.
 	 */
 	public int getShipCount() {
@@ -137,114 +149,34 @@ public class Planet extends AbstractUniverseObject implements TickTimer {
 	 *            the fleet arrived
 	 */
 	public void handleFleetArrival(Fleet fleet) {
-		synchronized (this) {
-			Owner planetOwner = this.getOwner();
-			Owner fleetOwner = fleet.getOwner();
-			int fleetShip = fleet.getShipCount();
-			int planetShip = this.getShipCount();
-			if (fleetOwner.equals(planetOwner)) {
-				/*
-				 * Enforce
-				 */
-				this.setShipCount(planetShip + fleetShip);
-			} else {
-				/*
-				 * Combact
-				 */
-				;
-				double fleetKillRate = fleet.getKillRate();
-				double planetKillRate = this.getKillRate();
-				double p = fleetKillRate / (fleetKillRate + planetKillRate);
-				while (fleetShip > 0 && planetShip > 0)
-					if (choose(p))
-						--fleetShip;
-					else
-						--planetShip;
-				if (fleetShip > 0) {
-					planetShip = fleetShip;
-					setOwner(fleetOwner);
-				}
-				setShipCount(planetShip);
+		final Owner planetOwner = owner;
+		final Owner fleetOwner = fleet.getOwner();
+		int fleetShip = fleet.getShipCount();
+		int planetShip = shipCount;
+		if (fleetOwner.equals(planetOwner)) {
+			/*
+			 * Enforce
+			 */
+			shipCount = planetShip + fleetShip;
+		} else {
+			/*
+			 * Combact
+			 */
+			;
+			final double fleetKillRate = fleet.getKillRate();
+			final double p = fleetKillRate / (fleetKillRate + killRate);
+			while (fleetShip > 0 && planetShip > 0)
+				if (choose(p))
+					--fleetShip;
+				else
+					--planetShip;
+			if (fleetShip > 0) {
+				planetShip = fleetShip;
+				owner = fleetOwner;
 			}
+			shipCount = planetShip;
 		}
 		getUniverse().removeFleet(fleet);
-	}
-
-	/**
-	 * @param owner
-	 * @param destination
-	 * @param ships
-	 * @return
-	 * @throws NoShipsException
-	 * @throws InvalidOwnerException
-	 */
-	public Fleet lunchFleet(Owner owner, Planet destination, int ships)
-			throws NoShipsException, InvalidOwnerException {
-		synchronized (this) {
-			/*
-			 * Validate request
-			 */
-			if (this.equals(destination))
-				throw new InvalidOwnerException(destination + "==" + this);
-
-			if (owner != this.getOwner()) {
-				throw new InvalidOwnerException(owner.getName()
-						+ " is not the owner of planet");
-			}
-			int shipCount = this.getShipCount() - ships;
-			if (shipCount < 0)
-				throw new NoShipsException("No ship available in planet "
-						+ this.getName());
-			this.setShipCount(shipCount);
-		}
-		Fleet fleet = new Fleet();
-		fleet.setOwner(owner);
-		fleet.setDestination(destination);
-		fleet.setShipCount(ships);
-		fleet.setLocation(this.getLocation());
-		fleet.setKillRate(this.getKillRate());
-		this.getUniverse().addFleet(fleet);
-		return fleet;
-	}
-
-	/**
-	 * @param location
-	 *            The location to set.
-	 */
-	public void setLocation(Point location) {
-		this.location = location;
-	}
-
-	/**
-	 * @param owner
-	 *            The owner to set.
-	 */
-	public void setOwner(Owner owner) {
-		this.owner = owner;
-	}
-
-	/**
-	 * @param shipBuilding
-	 *            The shipBuilding to set.
-	 */
-	protected void setShipBuilding(double shipBuilding) {
-		this.shipBuilding = shipBuilding;
-	}
-
-	/**
-	 * @param shipCount
-	 *            The shipCount to set.
-	 */
-	public void setShipCount(int shipCount) {
-		this.shipCount = shipCount;
-	}
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return this.getName();
 	}
 
 	/**
@@ -259,22 +191,40 @@ public class Planet extends AbstractUniverseObject implements TickTimer {
 	}
 
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @param owner
+	 * @param destination
+	 * @param ships
+	 * @return
+	 * @throws NoShipsException
+	 * @throws InvalidOwnerException
+	 */
+	public Fleet lunchFleet(Owner owner, Planet destination, int ships)
+			throws NoShipsException, InvalidOwnerException {
+		/*
+		 * Validate request
+		 */
+		if (this.equals(destination))
+			throw new InvalidOwnerException(destination + "==" + this);
+
+		if (owner != this.owner) {
+			throw new InvalidOwnerException(owner.getName()
+					+ " is not the owner of planet");
+		}
+		final int sc = shipCount - ships;
+		if (sc < 0)
+			throw new NoShipsException("No ship available in planet " + name);
+		shipCount = sc;
+		final Fleet fleet = new Fleet(owner, location, destination, ships,
+				killRate);
+		this.getUniverse().addFleet(fleet);
+		return fleet;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Planet other = (Planet) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
+	public String toString() {
+		return String.valueOf(name);
 	}
 }

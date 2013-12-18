@@ -87,80 +87,6 @@ public class StrategyImpl implements Strategy {
 	}
 
 	/**
-	 * 
-	 * @param target
-	 * @param from
-	 * @return
-	 */
-	private int getShipToWin(final Planet target, final Planet from) {
-		double shipToWin = getDefense(target) / (1 + from.getKillRate());
-		if (target.getOwner() != null)
-			shipToWin += getTimeToArrive(target, from) * target.getShipRate();
-		return (int) Math.round(shipToWin + 1);
-	}
-
-	/**
-	 * 
-	 * @param target
-	 * @param from
-	 * @return
-	 */
-	private double getTimeToArrive(Planet target, Planet from) {
-		final double dist = target.getLocation().distance(from.getLocation());
-		return dist * Constants.FLEET_SPEED;
-	}
-
-	/**
-	 * 
-	 * @param context
-	 * @param planet
-	 * @return
-	 */
-	private List<Planet> getTarget(final StrategyContext context,
-			final Planet planet) {
-		final List<Planet> target = new ArrayList<Planet>(
-				context.getNativePlanet());
-		target.addAll(context.getEnemyPlanet());
-		Collections.sort(target, new Comparator<Planet>() {
-
-			@Override
-			public int compare(final Planet p, final Planet q) {
-				final int scd = compareShipCount(p, q);
-				if (scd != 0)
-					return scd;
-				final int srd = compareShipRate(p, q);
-				if (srd != 0)
-					return srd;
-				return compareKillRate(p, q);
-			}
-
-			private int compareKillRate(final Planet p, final Planet q) {
-				return compareDouble(p.getKillRate() - q.getKillRate());
-			}
-
-			private int compareDouble(final double d) {
-				return (d < 0) ? -1 : (d > 0) ? 1 : 0;
-			}
-
-			private int compareShipRate(final Planet p, final Planet q) {
-				return compareDouble(p.getShipRate() - q.getShipRate());
-			}
-
-			private int compareShipCount(final Planet p, final Planet q) {
-				return getShipToWin(p) - getShipToWin(q);
-			}
-
-			private int getShipToWin(Planet p) {
-				double shipToWin = getDefense(p) / (1 + planet.getKillRate());
-				if (p.getOwner() != null)
-					shipToWin += getTimeToArrive(p, planet) * p.getShipRate();
-				return (int) Math.round(shipToWin + 1);
-			}
-		});
-		return target;
-	}
-
-	/**
 	 * Defense stratetegy.
 	 * <p>
 	 * The defense strategy balances the ships in the owned planets in order to
@@ -192,6 +118,114 @@ public class StrategyImpl implements Strategy {
 		// * Ordina i pianeti per capacità difensiva
 		// */
 		// Collections.sort(myPlanet, planetComp);
+	}
+
+	/**
+	 * 
+	 * @param ctx
+	 * @return
+	 */
+	private Planet getAttackPlanet(StrategyContext ctx) {
+		Planet t = null;
+		for (final Planet p : ctx.getMyPlanet())
+			if (t == null || p.getKillRate() < t.getKillRate())
+				t = p;
+		return t;
+	}
+
+	/**
+	 * 
+	 * @param p
+	 * @return
+	 */
+	private double getDefense(final Planet p) {
+		final double s = (p.getOwner() != null) ? p.getShipCount() : p
+				.getShipRate() * 1.5;
+		return s * (1 - p.getKillRate());
+	}
+
+	private double getMaxDamage(StrategyContext ctx) {
+		double x = 0;
+		for (final Planet p : ctx.getEnemyPlanet()) {
+			final double d = getDefense(p);
+			if (x < d)
+				x = d;
+		}
+		return x;
+	}
+
+	/**
+	 * 
+	 * @param target
+	 * @param from
+	 * @return
+	 */
+	private int getShipToWin(final Planet target, final Planet from) {
+		double shipToWin = getDefense(target) / (1 + from.getKillRate());
+		if (target.getOwner() != null)
+			shipToWin += getTimeToArrive(target, from) * target.getShipRate();
+		return (int) Math.round(shipToWin + 1);
+	}
+
+	/**
+	 * 
+	 * @param context
+	 * @param planet
+	 * @return
+	 */
+	private List<Planet> getTarget(final StrategyContext context,
+			final Planet planet) {
+		final List<Planet> target = new ArrayList<Planet>(
+				context.getNativePlanet());
+		target.addAll(context.getEnemyPlanet());
+		Collections.sort(target, new Comparator<Planet>() {
+
+			@Override
+			public int compare(final Planet p, final Planet q) {
+				final int scd = compareShipCount(p, q);
+				if (scd != 0)
+					return scd;
+				final int srd = compareShipRate(p, q);
+				if (srd != 0)
+					return srd;
+				return compareKillRate(p, q);
+			}
+
+			private int compareDouble(final double d) {
+				return (d < 0) ? -1 : (d > 0) ? 1 : 0;
+			}
+
+			private int compareKillRate(final Planet p, final Planet q) {
+				return compareDouble(p.getKillRate() - q.getKillRate());
+			}
+
+			private int compareShipCount(final Planet p, final Planet q) {
+				return getShipToWin(p) - getShipToWin(q);
+			}
+
+			private int compareShipRate(final Planet p, final Planet q) {
+				return compareDouble(p.getShipRate() - q.getShipRate());
+			}
+
+			private int getShipToWin(Planet p) {
+				double shipToWin = getDefense(p) / (1 + planet.getKillRate());
+				if (p.getOwner() != null)
+					shipToWin += getTimeToArrive(p, planet) * p.getShipRate();
+				return (int) Math.round(shipToWin + 1);
+			}
+		});
+		return target;
+	}
+
+	/**
+	 * 
+	 * @param target
+	 * @param from
+	 * @return
+	 */
+	private double getTimeToArrive(Planet target, Planet from) {
+		final double dist = target.getLocation().distance(from.getLocation());
+		return dist * Constants.FLEET_SPEED;
 	}
 
 	/**
@@ -229,40 +263,6 @@ public class StrategyImpl implements Strategy {
 				}
 			}
 		}
-	}
-
-	private double getMaxDamage(StrategyContext ctx) {
-		double x = 0;
-		for (final Planet p : ctx.getEnemyPlanet()) {
-			final double d = getDefense(p);
-			if (x < d)
-				x = d;
-		}
-		return x;
-	}
-
-	/**
-	 * 
-	 * @param p
-	 * @return
-	 */
-	private double getDefense(final Planet p) {
-		final double s = (p.getOwner() != null) ? p.getShipCount() : p
-				.getShipRate() * 1.5;
-		return s * (1 - p.getKillRate());
-	}
-
-	/**
-	 * 
-	 * @param ctx
-	 * @return
-	 */
-	private Planet getAttackPlanet(StrategyContext ctx) {
-		Planet t = null;
-		for (final Planet p : ctx.getMyPlanet())
-			if (t == null || p.getKillRate() < t.getKillRate())
-				t = p;
-		return t;
 	}
 
 }

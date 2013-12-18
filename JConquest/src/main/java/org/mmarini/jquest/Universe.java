@@ -10,13 +10,13 @@ import java.util.List;
 public class Universe implements TickTimer {
 	public static final double MAX_UNIVERSE_COORDINATE = (Constants.UNIVERSE_CELL_COUNT - 1) / 2;
 
-	private List<FleetListener> fleetListener;
-	private List<PlanetListener> planetListener;
 	private final List<Planet> planets;
 	private final List<Owner> owners;
 	private double time;
 	private Human human;
 	private List<Fleet> fleets;
+	private List<FleetListener> fleetListener;
+	private List<PlanetListener> planetListener;
 
 	/**
 	 * 
@@ -168,6 +168,13 @@ public class Universe implements TickTimer {
 	}
 
 	/**
+	 * @return the owners
+	 */
+	public List<Owner> getOwners() {
+		return owners;
+	}
+
+	/**
 	 * 
 	 * @return
 	 */
@@ -256,12 +263,5 @@ public class Universe implements TickTimer {
 	 */
 	public void setHuman(Human human) {
 		this.human = human;
-	}
-
-	/**
-	 * @return the owners
-	 */
-	public List<Owner> getOwners() {
-		return owners;
 	}
 }

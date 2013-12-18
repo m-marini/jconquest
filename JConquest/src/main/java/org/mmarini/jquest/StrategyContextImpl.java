@@ -18,6 +18,20 @@ public class StrategyContextImpl implements StrategyContext {
 	}
 
 	/**
+	 * @see org.mmarini.jquest.StrategyContext#getEnemyPlanet()
+	 */
+	@Override
+	public List<Planet> getEnemyPlanet() {
+		final List<Planet> l = new ArrayList<>();
+		for (final Planet p : owner.getUniverse().getPlanets()) {
+			final Owner o = p.getOwner();
+			if (o != null && !o.equals(owner))
+				l.add(p);
+		}
+		return l;
+	}
+
+	/**
 	 * @see org.mmarini.jquest.StrategyContext#getMyPlanet()
 	 */
 	@Override
@@ -25,6 +39,18 @@ public class StrategyContextImpl implements StrategyContext {
 		final List<Planet> l = new ArrayList<>();
 		for (final Planet p : owner.getUniverse().getPlanets())
 			if (owner.equals(p.getOwner()))
+				l.add(p);
+		return l;
+	}
+
+	/**
+	 * @see org.mmarini.jquest.StrategyContext#getNativePlanet()
+	 */
+	@Override
+	public List<Planet> getNativePlanet() {
+		final List<Planet> l = new ArrayList<>();
+		for (final Planet p : owner.getUniverse().getPlanets())
+			if (p.getOwner() == null)
 				l.add(p);
 		return l;
 	}
@@ -43,31 +69,5 @@ public class StrategyContextImpl implements StrategyContext {
 	@Override
 	public Universe getUniverse() {
 		return owner.getUniverse();
-	}
-
-	/**
-	 * @see org.mmarini.jquest.StrategyContext#getNativePlanet()
-	 */
-	@Override
-	public List<Planet> getNativePlanet() {
-		final List<Planet> l = new ArrayList<>();
-		for (final Planet p : owner.getUniverse().getPlanets())
-			if (p.getOwner() == null)
-				l.add(p);
-		return l;
-	}
-
-	/**
-	 * @see org.mmarini.jquest.StrategyContext#getEnemyPlanet()
-	 */
-	@Override
-	public List<Planet> getEnemyPlanet() {
-		final List<Planet> l = new ArrayList<>();
-		for (final Planet p : owner.getUniverse().getPlanets()) {
-			final Owner o = p.getOwner();
-			if (o != null && !o.equals(owner))
-				l.add(p);
-		}
-		return l;
 	}
 }

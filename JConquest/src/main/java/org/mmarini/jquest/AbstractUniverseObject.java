@@ -13,15 +13,15 @@ public abstract class AbstractUniverseObject implements UniverseObject {
 	 */
 	@Override
 	public void attach(Universe universe) {
-		this.setUniverse(universe);
+		this.universe = universe;
 	}
 
 	/**
 	 * @see org.mmarini.jquest.UniverseObject#detach(org.mmarini.jquest.Universe)
 	 */
 	@Override
-	public void detach(Universe universe) {
-		this.setUniverse(null);
+	public void detach(final Universe universe) {
+		this.universe = null;
 	}
 
 	/**
@@ -30,13 +30,5 @@ public abstract class AbstractUniverseObject implements UniverseObject {
 	@Override
 	public Universe getUniverse() {
 		return universe;
-	}
-
-	/**
-	 * @param universe
-	 *            The universe to set.
-	 */
-	protected void setUniverse(Universe universe) {
-		this.universe = universe;
 	}
 }

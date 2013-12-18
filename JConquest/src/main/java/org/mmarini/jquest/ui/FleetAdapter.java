@@ -33,15 +33,6 @@ public class FleetAdapter {
 	}
 
 	/**
-	 * @param g
-	 */
-	public void draw(Graphics2D g) {
-		final Color c = colorMap.get(fleet.getOwner());
-		g.setColor(c != null ? c : Color.LIGHT_GRAY);
-		g.fill(createShape());
-	}
-
-	/**
 	 * @return
 	 */
 	private Shape createShape() {
@@ -56,5 +47,14 @@ public class FleetAdapter {
 		final double theta = Math.atan2(-dx, dy);
 
 		return new FleetShape(x, y, theta);
+	}
+
+	/**
+	 * @param g
+	 */
+	public void draw(Graphics2D g) {
+		final Color c = colorMap.get(fleet.getOwner());
+		g.setColor(c != null ? c : Color.LIGHT_GRAY);
+		g.fill(createShape());
 	}
 }

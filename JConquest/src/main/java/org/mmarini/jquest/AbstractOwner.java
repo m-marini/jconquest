@@ -16,33 +16,6 @@ public abstract class AbstractOwner extends AbstractUniverseObject implements
 	}
 
 	/**
-	 * @see org.mmarini.jquest.Owner#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return String.valueOf(name);
-	}
-
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -60,5 +33,32 @@ public abstract class AbstractOwner extends AbstractUniverseObject implements
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	/**
+	 * @see org.mmarini.jquest.Owner#getName()
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.valueOf(name);
 	}
 }
