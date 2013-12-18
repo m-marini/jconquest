@@ -1,5 +1,7 @@
 package org.mmarini.jquest;
 
+import java.util.List;
+
 /**
  * The strategy context is the interface used by concrete Strategy to interact
  * with the universe
@@ -22,4 +24,22 @@ public interface StrategyContext {
 	 * @return the universe
 	 */
 	public abstract Universe getUniverse();
+
+	/**
+	 * 
+	 * @return
+	 */
+	public abstract List<Planet> getMyPlanet();
+
+	/**
+	 * 
+	 * @return
+	 */
+	public abstract List<Planet> getNativePlanet();
+
+	/**
+	 * 
+	 * @return
+	 */
+	public abstract List<Planet> getEnemyPlanet();
 }
